@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KARO-HAMD</title>
 
+<!-- تسريع فتح روابط إنستغرام -->
+<link rel="preconnect" href="https://www.instagram.com">
+<link rel="dns-prefetch" href="https://www.instagram.com">
+
 <style>
 body{
     margin:0;
@@ -14,19 +18,107 @@ body{
     color:#fff;
     text-align:center;
 }
-body::before{ content:""; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:-1; }
-h1{ margin-top:40px; font-size:48px; color:#ffcc00; text-shadow:0 0 15px #ffcc00; }
-h2{ color:#00ffcc; }
-.subtitle{ font-size:24px; color:#ff3399; margin-bottom:30px; }
-.account-list{ width:90%; max-width:700px; margin:auto; background:rgba(0,0,0,0.4); border-radius:20px; padding:20px; backdrop-filter:blur(10px); }
-.account{ display:flex; justify-content:space-between; align-items:center; padding:14px; margin:10px 0; border-radius:12px; background:linear-gradient(90deg,#ff660033,#00ffcc33); transition:0.3s; }
-.account:hover{ transform:scale(1.05); box-shadow:0 0 15px #ff6600; }
-.account a{ text-decoration:none; color:#fff; font-weight:bold; flex:1; }
-.copy-btn{ background:#111; border:none; color:#00ffcc; padding:5px 10px; border-radius:8px; cursor:pointer; }
-.copy-btn:hover{ background:#00ffcc; color:#000; }
-.toast{ position:fixed; bottom:40px; left:50%; transform:translateX(-50%) scale(0.8); background:#000; color:#ffcc00; padding:15px 30px; border-radius:40px; font-weight:bold; box-shadow:0 0 20px red; opacity:0; transition:0.4s; z-index:9999; }
-.shake{ animation:shakeScreen 0.4s; }
-@keyframes shakeScreen{0%{transform:translate(0)}20%{transform:translate(-10px,5px)}40%{transform:translate(10px,-5px)}60%{transform:translate(-10px,5px)}80%{transform:translate(10px,-5px)}100%{transform:translate(0)}}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    z-index:-1;
+}
+
+h1{
+    margin-top:40px;
+    font-size:48px;
+    color:#ffcc00;
+    text-shadow:0 0 15px #ffcc00;
+}
+
+h2{
+    color:#00ffcc;
+}
+
+.subtitle{
+    font-size:24px;
+    color:#ff3399;
+    margin-bottom:30px;
+}
+
+.account-list{
+    width:90%;
+    max-width:700px;
+    margin:auto;
+    background:rgba(0,0,0,0.4);
+    border-radius:20px;
+    padding:20px;
+    backdrop-filter:blur(10px);
+}
+
+.account{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px;
+    margin:10px 0;
+    border-radius:12px;
+    background:linear-gradient(90deg,#ff660033,#00ffcc33);
+    transition:0.3s;
+}
+
+.account:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 15px #ff6600;
+}
+
+.account a{
+    text-decoration:none;
+    color:#fff;
+    font-weight:bold;
+    flex:1;
+}
+
+.copy-btn{
+    background:#111;
+    border:none;
+    color:#00ffcc;
+    padding:5px 10px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.copy-btn:hover{
+    background:#00ffcc;
+    color:#000;
+}
+
+.toast{
+    position:fixed;
+    bottom:40px;
+    left:50%;
+    transform:translateX(-50%) scale(0.8);
+    background:#000;
+    color:#ffcc00;
+    padding:15px 30px;
+    border-radius:40px;
+    font-weight:bold;
+    box-shadow:0 0 20px red;
+    opacity:0;
+    transition:0.4s;
+    z-index:9999;
+}
+
+.shake{
+    animation:shakeScreen 0.4s;
+}
+
+@keyframes shakeScreen{
+    0%{transform:translate(0)}
+    20%{transform:translate(-10px,5px)}
+    40%{transform:translate(10px,-5px)}
+    60%{transform:translate(-10px,5px)}
+    80%{transform:translate(10px,-5px)}
+    100%{transform:translate(0)}
+}
 </style>
 </head>
 <body>
@@ -37,6 +129,7 @@ h2{ color:#00ffcc; }
 
 <div class="account-list" id="accounts"></div>
 
+<!-- صوت -->
 <audio id="slipperSound">
   <source src="https://www.soundjay.com/human/slap-01.mp3" type="audio/mpeg">
 </audio>
@@ -72,78 +165,19 @@ accounts.forEach(acc=>{
 
     // الرابط
     const link=document.createElement("a");
-    link.href="#";
+    link.href="https://www.instagram.com/"+acc.user;
+    link.target="_blank"; // يفتح في تبويب جديد
     link.innerText="✦ "+acc.name;
 
-    link.onclick = async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData();
-        formData.append("username", acc.user);
-
-        try{
-            const res = await fetch("/check", {
-                method:"POST",
-                body: formData
-            });
-
-            const data = await res.json();
-
-            if(data.result && data.result.error === false){
-                window.open("https://www.instagram.com/"+acc.user, "_blank");
-            } else {
-                showToast("تم الشلف بنعال👞");
-                punishEffect();
-            }
-
-        }catch(err){
-            showToast("تم الشلف بنعال👞");
-            punishEffect();
-        }
-    };
-
+    // زر النسخ
     const copy=document.createElement("button");
     copy.innerText="نسخ";
     copy.className="copy-btn";
-
-    copy.onclick = async (e)=>{
+    copy.onclick=(e)=>{
         e.stopPropagation();
-
-        const formData = new FormData();
-        formData.append("username", acc.user);
-
-        try{
-            const res = await fetch("/check", {
-                method:"POST",
-                body: formData
-            });
-
-            const data = await res.json();
-
-            if(data.result && data.result.error === false){
-                const p = data.result.profile;
-
-                const fullInfo =
-`Username: ${p.username}
-ID: ${p.id}
-Full Name: ${p.full_name}
-Bio: ${p.biography}
-Followers: ${p.count_followers}
-Following: ${p.count_following}
-Private: ${p.is_private}`;
-
-                await navigator.clipboard.writeText(fullInfo);
-                showToast("تم نسخ معلومات الحساب ✔");
-                punishEffect();
-            } else {
-                showToast("تم الشلف بنعال👞");
-                punishEffect();
-            }
-
-        }catch(err){
-            showToast("تم الشلف بنعال👞");
-            punishEffect();
-        }
+        navigator.clipboard.writeText(acc.user);
+        showToast("تم نسخ اليوزر ✔");
+        punishEffect();
     };
 
     div.appendChild(link);
@@ -153,25 +187,33 @@ Private: ${p.is_private}`;
 
 });
 
+// توست
 function showToast(message){
     const toast=document.createElement("div");
     toast.className="toast";
     toast.innerText=message;
     document.body.appendChild(toast);
+
     setTimeout(()=>{
         toast.style.opacity="1";
         toast.style.transform="translateX(-50%) scale(1)";
     },50);
+
     setTimeout(()=>{
         toast.style.opacity="0";
         setTimeout(()=>toast.remove(),400);
     },2500);
 }
 
+// اهتزاز + صوت
 function punishEffect(){
-    if(navigator.vibrate){ navigator.vibrate([200,100,200]); }
+    if(navigator.vibrate){
+        navigator.vibrate([200,100,200]);
+    }
+
     document.body.classList.add("shake");
     setTimeout(()=>document.body.classList.remove("shake"),400);
+
     const sound=document.getElementById("slipperSound");
     sound.currentTime=0;
     sound.play();
@@ -180,4 +222,3 @@ function punishEffect(){
 
 </body>
 </html>
-
