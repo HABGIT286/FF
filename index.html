@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KARO-HAMD</title>
+<title>KARO-HAMD Desktop</title>
 
-<!-- تسريع فتح روابط إنستغرام -->
 <link rel="preconnect" href="https://www.instagram.com">
 <link rel="dns-prefetch" href="https://www.instagram.com">
 
@@ -16,28 +15,38 @@ body, h1, h2, .subtitle, .account, .account a, .copy-btn {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    margin:0;
 }
 
 body{
-    margin:0;
     font-family:'Segoe UI',Tahoma;
-    background:url('DD.jpg') no-repeat center center fixed;
-    background-size:cover;
     color:#fff;
     text-align:center;
+    overflow-x:hidden;
 }
 
-body::before{
+/* فيديو الخلفية */
+#bgVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -2;
+}
+
+body::before {
     content:"";
-    position:fixed;
+    position: fixed;
     inset:0;
-    background:rgba(0,0,0,0.6);
-    z-index:-1;
+    background: rgba(0,0,0,0.3);
+    z-index: -1;
 }
 
 h1{
-    margin-top:40px;
-    font-size:48px;
+    margin-top:20px;
+    font-size:36px;
     color:#ffcc00;
     text-shadow:0 0 15px #ffcc00;
 }
@@ -47,53 +56,56 @@ h2{
 }
 
 .subtitle{
-    font-size:24px;
+    font-size:20px;
     color:#ff3399;
     margin-bottom:30px;
 }
 
+/* الشبكة مثل سطح المكتب */
 .account-list{
-    width:90%;
-    max-width:700px;
-    margin:auto;
-    background:rgba(0,0,0,0.4);
-    border-radius:20px;
-    padding:20px;
-    backdrop-filter:blur(10px);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 25px;
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
 }
 
 .account{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:14px;
-    margin:10px 0;
-    border-radius:12px;
-    background:linear-gradient(90deg,#ff660033,#00ffcc33);
-    transition:0.3s;
-    cursor:pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.5);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
 }
 
 .account:hover{
-    transform:scale(1.05);
-    box-shadow:0 0 15px #ff6600;
+    transform: scale(1.2);
+    box-shadow: 0 0 20px #ff6600;
 }
 
 .account a{
-    text-decoration:none;
     color:#fff;
     font-weight:bold;
-    flex:1;
+    text-decoration: none;
+    text-align: center;
+    margin-top: 10px;
 }
 
 .copy-btn{
+    margin-top: 5px;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: none;
     background:#111;
-    border:none;
     color:#00ffcc;
-    padding:5px 10px;
-    border-radius:8px;
-    cursor:pointer;
-    transition:0.3s;
+    cursor: pointer;
 }
 
 .copy-btn:hover{
@@ -101,6 +113,7 @@ h2{
     color:#000;
 }
 
+/* التوست */
 .toast{
     position:fixed;
     bottom:50px;
@@ -124,6 +137,7 @@ h2{
     transform:translateX(-50%) scale(1);
 }
 
+/* اهتزاز */
 .shake{
     animation:shakeScreen 0.4s;
 }
@@ -139,6 +153,11 @@ h2{
 </style>
 </head>
 <body>
+
+<!-- فيديو الخلفية -->
+<video autoplay muted loop id="bgVideo">
+    <source src="BAK.mp4" type="video/mp4">
+</video>
 
 <h1>KARO-HAMD</h1>
 <h2>@YourTelegram</h2>
@@ -176,18 +195,18 @@ const accounts = [
 
 const container = document.getElementById("accounts");
 
-accounts.forEach((acc, index)=>{
-    const div=document.createElement("div");
+accounts.forEach((acc,index)=>{
+    const div = document.createElement("div");
     div.className="account";
 
-    // الرابط
-    const link=document.createElement("a");
+    // رابط الحساب
+    const link = document.createElement("a");
     link.href="https://www.instagram.com/"+acc.user;
     link.target="_blank";
     link.innerText="✦ "+acc.name;
 
-    if(index === 0){
-        // أول حساب: إظهار توست فقط وعدم فتح الرابط
+    if(index===0){
+        // أول حساب: توست فقط، لا يفتح الرابط
         link.onclick = (e)=>{
             e.preventDefault();
             showToast("تم الشلف بنعال 👞");
@@ -196,12 +215,13 @@ accounts.forEach((acc, index)=>{
     }
 
     // زر النسخ
-    const copy=document.createElement("button");
+    const copy = document.createElement("button");
     copy.innerText="نسخ";
     copy.className="copy-btn";
-    copy.onclick=(e)=>{
+    copy.onclick = (e)=>{
         e.stopPropagation();
         navigator.clipboard.writeText(acc.user);
+
         if(index===0){
             showToast("تم الشلف بنعال 👞");
             punishEffect();
@@ -217,15 +237,14 @@ accounts.forEach((acc, index)=>{
 
 });
 
-// توست
+// التوست
 function showToast(message){
-    const toast=document.createElement("div");
+    const toast = document.createElement("div");
     toast.className="toast";
-    toast.innerText=message;
+    toast.innerText = message;
     document.body.appendChild(toast);
 
     setTimeout(()=>toast.classList.add("show"),50);
-
     setTimeout(()=>{
         toast.classList.remove("show");
         setTimeout(()=>toast.remove(),400);
@@ -241,8 +260,8 @@ function punishEffect(){
     document.body.classList.add("shake");
     setTimeout(()=>document.body.classList.remove("shake"),400);
 
-    const sound=document.getElementById("slipperSound");
-    sound.currentTime=0;
+    const sound = document.getElementById("slipperSound");
+    sound.currentTime = 0;
     sound.play();
 }
 </script>
